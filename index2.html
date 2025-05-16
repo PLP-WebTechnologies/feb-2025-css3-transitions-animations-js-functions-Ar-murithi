@@ -5,9 +5,20 @@
   <title>Theme Toggle with Animation</title>
   <style>
     body {
+      margin: 0;
+    
       transition: background-color 0.5s, color 0.5s;
+      padding: 0;
       font-family: Arial, sans-serif;
-      padding: 20px;
+    }
+    button {
+      font-size: 20px;
+      padding:10px 20px;
+      transition: transform 0.3s, background-color 0.3s;
+      cursor: pointer;
+    }
+    button:hover {
+      transform: scale(1.05);
     }
 
     .dark-theme {
@@ -20,77 +31,48 @@
       color: black;
     }
 
-    #toggleBtn {
-      padding: 10px 20px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: transform 0.3s ease;
-    }
-
     #toggleBtn.animate {
       transform: scale(1.2);
     }
   </style>
 </head>
 <body>
-
+  <div>
+     <h1> Welcome to My Webpage</h1>
+      <p>This is a simple theme toggle example with animation.</p>
   <button id="toggleBtn">Toggle Theme</button>
 
   <script>
-    const THEME_KEY = 'theme'; // Define a constant for the theme key
-
-    // Check if localStorage is available
-    function isLocalStorageAvailable() {
-      try {
-        const testKey = '__test__';
-        localStorage.setItem(testKey, 'test');
-        localStorage.removeItem(testKey);
-        return true;
-      } catch (e) {
-        return false;
+     // The function to apply to the saved theme
+       function applySavedTheme() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        document.body.classList.add(savedTheme);
+      } else {
+        document.body.classList.add("light-theme"); // Default theme
       }
     }
 
-    // Store user preference in localStorage
-    function storePreference(key, value) {
-      if (isLocalStorageAvailable()) {
-        localStorage.setItem(key, value);
+    function toggleTheme() {
+      if (document.body.classList.contains("light-theme")) {
+        document.body.classList.remove("light-theme");
+        document.body.classList.add("dark-theme");
+        localStorage.setItem("theme", "dark-theme");
+      } else {
+        document.body.classList.remove("dark-theme");
+        document.body.classList.add("light-theme");
+        localStorage.setItem("theme", "light-theme");
       }
+
+      // Optional: Animate the button briefly
+      const btn = document.getElementById("toggleBtn");
+      btn.classList.add("animate");
+      setTimeout(() => btn.classList.remove("animate"), 300);
     }
 
-    // Retrieve user preference from localStorage
-    function getPreference(key) {
-      return isLocalStorageAvailable() ? localStorage.getItem(key) : null;
-    }
-
-    // Apply the selected theme to the body
-    function applyTheme(theme) {
-      document.body.className = `${theme}-theme`;
-    }
-
-    // Animate the button with a debounce mechanism
-    function animateButton(button) {
-      button.disabled = true; // Disable the button during animation
-      button.classList.add('animate');
-      setTimeout(() => {
-        button.classList.remove('animate');
-        button.disabled = false; // Re-enable the button after animation
-      }, 300);
-    }
-
-    // Initialize the theme toggle functionality
-    document.addEventListener('DOMContentLoaded', () => {
-      const button = document.getElementById('toggleBtn');
-      let currentTheme = getPreference(THEME_KEY) || 'light'; // Default to light theme
-      applyTheme(currentTheme);
-
-      button.addEventListener('click', () => {
-        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-        storePreference(THEME_KEY, currentTheme);
-        applyTheme(currentTheme);
-        animateButton(button);
-      });
-    });
+    applySavedTheme();
+    document.getElementById("toggleBtn").addEventListener("click", toggleTheme);
+    
   </script>
 
 </body>
